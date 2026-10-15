@@ -18,10 +18,23 @@ void AStar::BeginPlay()
 	
 }
 
-// Called every frame
-void AStar::Tick(float DeltaTime)
+int AStar::GetRow()
 {
-	Super::Tick(DeltaTime);
+	return RowIndex;
+}
 
+int AStar::GetColumn()
+{
+	return ColumnIndex;
+}
+
+void AStar::SetRow(int row)
+{
+	RowIndex = row;
+}
+
+void AStar::SetColumn(int column)
+{
+	ColumnIndex = column;
 }
 
