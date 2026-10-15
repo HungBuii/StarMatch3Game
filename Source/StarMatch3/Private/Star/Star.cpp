@@ -38,3 +38,8 @@ void AStar::SetColumn(int column)
 	ColumnIndex = column;
 }
 
+void AStar::SetGridManager(AGridManager* _GridManager)
+{
+	GridManager = _GridManager;
+}
+

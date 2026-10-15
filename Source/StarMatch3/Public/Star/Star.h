@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Star.generated.h"
 
+class AGridManager;
+
 UCLASS()
 class STARMATCH3_API AStar : public AActor
 {
@@ -25,10 +27,15 @@ public:
 	int GetColumn();
 	void SetRow(int row);
 	void SetColumn(int column);
+	void SetGridManager(AGridManager* _GridManager);
 	
 	// Set Material
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetType(int type, UMaterialInterface* material);
+	
+	// Movement
+	UFUNCTION(BlueprintImplementableEvent)
+	void MoveTo(FVector NewLocation);
 	
 private:
 	/** row, col index */
@@ -41,4 +48,8 @@ private:
 	// num type material
 	UPROPERTY(BlueprintReadWrite, Category="Material", meta=(AllowPrivateAccess=true))
 	int NumType = 0;
+	
+	// store GridManager
+	UPROPERTY(BlueprintReadOnly, Category="Grid Manager", meta=(AllowPrivateAccess=true))
+	TObjectPtr<AGridManager> GridManager;
 };

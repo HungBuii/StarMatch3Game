@@ -23,11 +23,17 @@ protected:
 
 public:
 	// Star pos in World
-	FVector GetWorldPosition(int rowIndex, int colIndex);
+	FVector GetStarWorldPosition(int rowIndex, int colIndex);
 	
 	void SpawnStar(int rowIndex, int colIndex);
 	
-public:
+	UFUNCTION(BlueprintCallable)
+	void OnStarClicked(AStar* StarClicked);
+	
+	bool AreAdjacent(AStar* StarSelected1, AStar* StarSelected2);
+	
+	void SwapStars(AStar* StarSelected1, AStar* StarSelected2);
+	
 	// Star Class
 	UPROPERTY(EditDefaultsOnly, Category="Star")
 	TSubclassOf<AStar> StarClass;
@@ -35,6 +41,9 @@ public:
 private:	
 	// Star 
 	TObjectPtr<AStar> Star;
+	
+	// Star Clicked
+	TObjectPtr<AStar> StarSelected;
 	
 	/** Num row, col */
 	UPROPERTY(EditDefaultsOnly, Category="Size", meta=(AllowPrivateAccess=true))
