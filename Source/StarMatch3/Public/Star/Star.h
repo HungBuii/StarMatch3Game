@@ -27,9 +27,13 @@ public:
 	int GetColumn();
 	void SetRow(int row);
 	void SetColumn(int column);
+	
+	// Set GridManager
 	void SetGridManager(AGridManager* _GridManager);
 	
 	// Set Material
+	int GetType();
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetType(int type, UMaterialInterface* material);
 	

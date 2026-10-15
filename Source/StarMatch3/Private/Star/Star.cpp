@@ -38,6 +38,11 @@ void AStar::SetColumn(int column)
 	ColumnIndex = column;
 }
 
+int AStar::GetType()
+{
+	return NumType;
+}
+
 void AStar::SetGridManager(AGridManager* _GridManager)
 {
 	GridManager = _GridManager;

@@ -22,9 +22,16 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Star pos in World
-	FVector GetStarWorldPosition(int rowIndex, int colIndex);
+	// Get StarIndex in array
+	int GetStarIndexInArray(int _RowIndex, int _ColIndex);
 	
+	// Star pos in World
+	FVector GetStarWorldPosition(int _RowIndex, int _ColIndex);
+	
+	// Get Star
+	AStar* GetStar(int _RowIndex, int _ColIndex);
+	
+	// Spawn Star
 	void SpawnStar(int rowIndex, int colIndex);
 	
 	UFUNCTION(BlueprintCallable)
@@ -32,7 +39,13 @@ public:
 	
 	bool AreAdjacent(AStar* StarSelected1, AStar* StarSelected2);
 	
+	// Swap Star
 	void SwapStars(AStar* StarSelected1, AStar* StarSelected2);
+	
+	// Find 3 match Stars
+	void FindMatches();
+	
+	// 
 	
 	// Star Class
 	UPROPERTY(EditDefaultsOnly, Category="Star")
@@ -45,6 +58,12 @@ private:
 	// Star Clicked
 	TObjectPtr<AStar> StarSelected;
 	
+	// Array store Stars
+	TArray<AStar*> Stars;
+	
+	// Array store match 3 Stars
+	TArray<AStar*> StarsFound;
+	
 	/** Num row, col */
 	UPROPERTY(EditDefaultsOnly, Category="Size", meta=(AllowPrivateAccess=true))
 	int NRow = 0;
@@ -56,7 +75,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Size", meta=(AllowPrivateAccess=true))
 	int CellSize = 0;
 	
-	/** Star type */
+	// Star type
 	UPROPERTY(EditDefaultsOnly, Category="Star Type", meta=(AllowPrivateAccess=true))
 	TArray<UMaterialInterface*> StarMaterials;
+	
 };

@@ -21,6 +21,8 @@ void AGridManager::BeginPlay()
 	
 	if (StarClass)
 	{
+		Stars.Empty();
+		
 		for (int i = 0; i < NRow; i++)
 		{
 			for (int j = 0; j < NColumn; j++)
@@ -29,12 +31,28 @@ void AGridManager::BeginPlay()
 			}
 		}
 		
+		FindMatches();
 	}
 }
 
-FVector AGridManager::GetStarWorldPosition(int rowIndex, int colIndex)
+int AGridManager::GetStarIndexInArray(int _RowIndex, int _ColIndex)
 {
-	return FVector(colIndex * CellSize, 0, rowIndex * CellSize + CellSize);
+	return _RowIndex * NColumn + _ColIndex;
+}
+
+FVector AGridManager::GetStarWorldPosition(int _RowIndex, int _ColIndex)
+{
+	return FVector(_ColIndex * CellSize, 0, _RowIndex * CellSize + CellSize);
+}
+
+AStar* AGridManager::GetStar(int _RowIndex, int _ColIndex)
+{
+	if ( (_RowIndex >= 0 && _RowIndex < NRow) && (_ColIndex >= 0 && _ColIndex < NColumn) )
+	{
+		return Stars[GetStarIndexInArray(_RowIndex, _ColIndex)];
+	}
+	
+	return nullptr;
 }
 
 void AGridManager::SpawnStar(int RowIndex, int ColIndex)
@@ -51,6 +69,8 @@ void AGridManager::SpawnStar(int RowIndex, int ColIndex)
 		int Rand = UKismetMathLibrary::RandomIntegerInRange(0, StarMaterials.Num() - 1);
 		Star->SetType(Rand, StarMaterials[Rand]);
 	}
+	
+	Stars.Add(Star);
 }
 
 void AGridManager::OnStarClicked(AStar* StarClicked)
@@ -91,9 +111,40 @@ void AGridManager::SwapStars(AStar* StarSelected1, AStar* StarSelected2)
 	StarSelected2->SetRow(TempRow);
 	StarSelected2->SetColumn(TempColumn);
 	
+	Stars[GetStarIndexInArray(StarSelected1->GetRow(), StarSelected1->GetColumn())] = StarSelected1;
+	Stars[GetStarIndexInArray(StarSelected2->GetRow(), StarSelected2->GetColumn())] = StarSelected2;
 	
 	StarSelected1->MoveTo(GetStarWorldPosition(StarSelected1->GetRow(), StarSelected1->GetColumn()));
 	StarSelected2->MoveTo(GetStarWorldPosition(StarSelected2->GetRow(), StarSelected2->GetColumn()));
+}
+
+void AGridManager::FindMatches()
+{
+	StarsFound.Empty();
+	
+	// check horizontal
+	for (int i = 0; i < NRow; i++)
+	{
+		for (int j = 0; j < NColumn - 3; j++)
+		{
+			if (Stars[GetStarIndexInArray(i, j)] != nullptr && 
+				Stars[GetStarIndexInArray(i, j + 1)] != nullptr && 
+				Stars[GetStarIndexInArray(i, j + 2)] != nullptr && 
+				Stars[GetStarIndexInArray(i, j)]->GetType() == Stars[GetStarIndexInArray(i, j + 1)]->GetType() && 
+				Stars[GetStarIndexInArray(i, j + 1)]->GetType() == Stars[GetStarIndexInArray(i, j + 2)]->GetType())
+			{
+				StarsFound.AddUnique(Stars[GetStarIndexInArray(i, j)]);
+				StarsFound.AddUnique(Stars[GetStarIndexInArray(i, j + 1)]);
+				StarsFound.AddUnique(Stars[GetStarIndexInArray(i, j + 2)]);
+			}
+		}
+	}
+	
+	for (int i = 0; i < StarsFound.Num(); i++)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("StarsFound[%d] = %s"), i, *StarsFound[i]->GetName());
+	}
+	
 }
 
 
