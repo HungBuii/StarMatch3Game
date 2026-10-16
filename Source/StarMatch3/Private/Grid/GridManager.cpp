@@ -140,6 +140,24 @@ void AGridManager::FindMatches()
 		}
 	}
 	
+	// check vertical
+	for (int i = 0; i < NColumn; i++)
+	{
+		for (int j = 0; j < NRow - 3; j++)
+		{
+			if (Stars[GetStarIndexInArray(j, i)] != nullptr && 
+				Stars[GetStarIndexInArray(j + 1, i)] != nullptr && 
+				Stars[GetStarIndexInArray(j + 2, i)] != nullptr && 
+				Stars[GetStarIndexInArray(j, i)]->GetType() == Stars[GetStarIndexInArray(j + 1, i)]->GetType() && 
+				Stars[GetStarIndexInArray(j + 1, i)]->GetType() == Stars[GetStarIndexInArray(j + 2, i)]->GetType())
+			{
+				StarsFound.AddUnique(Stars[GetStarIndexInArray(j, i)]);
+				StarsFound.AddUnique(Stars[GetStarIndexInArray(j + 1, i)]);
+				StarsFound.AddUnique(Stars[GetStarIndexInArray(j + 2, i)]);
+			}
+		}
+	}
+	
 	for (int i = 0; i < StarsFound.Num(); i++)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("StarsFound[%d] = %s"), i, *StarsFound[i]->GetName());
