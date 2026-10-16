@@ -32,7 +32,7 @@ public:
 	AStar* GetStar(int _RowIndex, int _ColIndex);
 	
 	// Spawn Star
-	void SpawnStar(int rowIndex, int colIndex);
+	AStar* SpawnStar(int rowIndex, int colIndex);
 	
 	UFUNCTION(BlueprintCallable)
 	void OnStarClicked(AStar* StarClicked);
@@ -47,6 +47,15 @@ public:
 	
 	// Destroy 3 match Stars
 	void ClearMatches();
+	
+	// Collapse Column On Board after destroy 3 match Stars
+	void CollapseColumnOnBoard(int _ColIndex);
+	
+	// Resolve loop on board
+	UFUNCTION()
+	bool ResolveMatches();
+	
+	void ResolveLoop();
 	
 	// Star Class
 	UPROPERTY(EditDefaultsOnly, Category="Star")
@@ -65,6 +74,9 @@ private:
 	// Array store match 3 Stars
 	TArray<AStar*> StarsFound;
 	
+	// Array store all Stars exist after destroy 
+	TArray<AStar*> StarsExist;
+	
 	/** Num row, col */
 	UPROPERTY(EditDefaultsOnly, Category="Size", meta=(AllowPrivateAccess=true))
 	int NRow = 0;
@@ -80,4 +92,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Star Type", meta=(AllowPrivateAccess=true))
 	TArray<UMaterialInterface*> StarMaterials;
 	
+	// Timer
+	FTimerHandle DelayHandle;
 };

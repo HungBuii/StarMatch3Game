@@ -31,8 +31,10 @@ void AGridManager::BeginPlay()
 			}
 		}
 		
-		FindMatches();
-		ClearMatches();
+		if (ResolveMatches())
+		{
+			GetWorldTimerManager().SetTimer(DelayHandle, this, &AGridManager::ResolveLoop, 0.4f, true);
+		}
 	}
 }
 
@@ -56,9 +58,9 @@ AStar* AGridManager::GetStar(int _RowIndex, int _ColIndex)
 	return nullptr;
 }
 
-void AGridManager::SpawnStar(int RowIndex, int ColIndex)
+AStar* AGridManager::SpawnStar(int RowIndex, int ColIndex)
 {
-	FVector SpawnLocation = FVector(0.f, 0.f, 0.f) + GetStarWorldPosition(RowIndex, ColIndex);
+	FVector SpawnLocation = FVector(0.f, 0.f, NRow * CellSize) + GetStarWorldPosition(RowIndex, ColIndex);
 	FRotator SpawnRotation = FRotator(0.f, 0.f, 0.f);
 	Star = Cast<AStar>(GetWorld()->SpawnActor<AActor>(StarClass, SpawnLocation, SpawnRotation));
 	Star->SetRow(RowIndex);
@@ -72,6 +74,8 @@ void AGridManager::SpawnStar(int RowIndex, int ColIndex)
 	}
 	
 	Stars.Add(Star);
+	
+	return Star;
 }
 
 void AGridManager::OnStarClicked(AStar* StarClicked)
@@ -196,6 +200,56 @@ void AGridManager::ClearMatches()
 	}
 	UE_LOG(LogTemp, Warning, TEXT("StarsFoundNumsArray = %d"), StarsFound.Num());
 	UE_LOG(LogTemp, Warning, TEXT("StarsNumsArray = %d"), Stars.Num());
+}
+
+void AGridManager::CollapseColumnOnBoard(int _ColIndex)
+{
+	StarsExist.Empty();
+	
+	// find all stars exist on board
+	for (int i = 0; i < NRow; i++)
+	{
+		if (Stars[GetStarIndexInArray(i, _ColIndex)])
+		{
+			StarsExist.Add(Stars[GetStarIndexInArray(i, _ColIndex)]);
+		}
+	}
+	
+	// Move the existing star to fill the gap (move it downward)
+	for (int i = 0; i < NRow; i++)
+	{
+		if (i < StarsExist.Num())
+		{
+			Stars[GetStarIndexInArray(i, _ColIndex)] = StarsExist[i];
+			StarsExist[i]->SetRow(i);
+			StarsExist[i]->MoveTo(GetStarWorldPosition(i, _ColIndex));
+		}
+		else
+		{
+			Stars[GetStarIndexInArray(i, _ColIndex)] = SpawnStar(i, _ColIndex);
+		}
+	}
+}
+
+bool AGridManager::ResolveMatches()
+{
+	FindMatches();
+	if (StarsFound.Num() > 0)
+	{
+		ClearMatches();
+			
+		for (int i = 0; i < NColumn; i++)
+		{
+			CollapseColumnOnBoard(i);
+		}
+	}
+	
+	return true;
+}
+
+void AGridManager::ResolveLoop()
+{
+	ResolveMatches();
 }
 
 
