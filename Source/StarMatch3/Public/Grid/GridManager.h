@@ -45,7 +45,8 @@ public:
 	// Find 3 match Stars
 	void FindMatches();
 	
-	// 
+	// Destroy 3 match Stars
+	void ClearMatches();
 	
 	// Star Class
 	UPROPERTY(EditDefaultsOnly, Category="Star")

@@ -32,6 +32,7 @@ void AGridManager::BeginPlay()
 		}
 		
 		FindMatches();
+		ClearMatches();
 	}
 }
 
@@ -120,6 +121,7 @@ void AGridManager::SwapStars(AStar* StarSelected1, AStar* StarSelected2)
 
 void AGridManager::FindMatches()
 {
+	UE_LOG(LogTemp, Warning, TEXT("StarsNumsArray = %d"), Stars.Num());
 	StarsFound.Empty();
 	
 	// check horizontal
@@ -136,6 +138,14 @@ void AGridManager::FindMatches()
 				StarsFound.AddUnique(Stars[GetStarIndexInArray(i, j)]);
 				StarsFound.AddUnique(Stars[GetStarIndexInArray(i, j + 1)]);
 				StarsFound.AddUnique(Stars[GetStarIndexInArray(i, j + 2)]);
+				
+				// Stars[GetStarIndexInArray(i, j)]->K2_DestroyActor();
+				// Stars[GetStarIndexInArray(i, j + 1)]->K2_DestroyActor();
+				// Stars[GetStarIndexInArray(i, j + 2)]->K2_DestroyActor();
+				
+				// Stars.Remove(Stars[GetStarIndexInArray(i, j)]);
+				// Stars.Remove(Stars[GetStarIndexInArray(i, j + 1)]);
+				// Stars.Remove(Stars[GetStarIndexInArray(i, j + 2)]);
 			}
 		}
 	}
@@ -148,21 +158,44 @@ void AGridManager::FindMatches()
 			if (Stars[GetStarIndexInArray(j, i)] != nullptr && 
 				Stars[GetStarIndexInArray(j + 1, i)] != nullptr && 
 				Stars[GetStarIndexInArray(j + 2, i)] != nullptr && 
-				Stars[GetStarIndexInArray(j, i)]->GetType() == Stars[GetStarIndexInArray(j + 1, i)]->GetType() && 
-				Stars[GetStarIndexInArray(j + 1, i)]->GetType() == Stars[GetStarIndexInArray(j + 2, i)]->GetType())
+				Stars[GetStarIndexInArray(j, i)]->GetType() == 
+				Stars[GetStarIndexInArray(j + 1, i)]->GetType() && 
+				Stars[GetStarIndexInArray(j + 1, i)]->GetType() == 
+				Stars[GetStarIndexInArray(j + 2, i)]->GetType())
 			{
 				StarsFound.AddUnique(Stars[GetStarIndexInArray(j, i)]);
 				StarsFound.AddUnique(Stars[GetStarIndexInArray(j + 1, i)]);
 				StarsFound.AddUnique(Stars[GetStarIndexInArray(j + 2, i)]);
+				
+				// Stars[GetStarIndexInArray(j, i)]->K2_DestroyActor();
+				// Stars[GetStarIndexInArray(j + 1, i)]->K2_DestroyActor();
+				// Stars[GetStarIndexInArray(j + 2, i)]->K2_DestroyActor();
 			}
 		}
 	}
 	
 	for (int i = 0; i < StarsFound.Num(); i++)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StarsFound[%d] = %s"), i, *StarsFound[i]->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("StarsFound[%d] = %s, %d"), i, *StarsFound[i]->GetName(), StarsFound[i]->GetType());
 	}
 	
+	UE_LOG(LogTemp, Warning, TEXT("StarsNumsArray = %d"), Stars.Num());
+	
+}
+
+void AGridManager::ClearMatches()
+{
+	for (int i = 0; i < StarsFound.Num(); i++)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Stars[%d].Name = %s"), 
+			GetStarIndexInArray(StarsFound[i]->GetRow(), StarsFound[i]->GetColumn()),
+			*Stars[GetStarIndexInArray(StarsFound[i]->GetRow(), StarsFound[i]->GetColumn())]->GetName()
+			);
+		Stars[GetStarIndexInArray(StarsFound[i]->GetRow(), StarsFound[i]->GetColumn())]->K2_DestroyActor();
+		Stars[GetStarIndexInArray(StarsFound[i]->GetRow(), StarsFound[i]->GetColumn())] = nullptr;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("StarsFoundNumsArray = %d"), StarsFound.Num());
+	UE_LOG(LogTemp, Warning, TEXT("StarsNumsArray = %d"), Stars.Num());
 }
 
 
